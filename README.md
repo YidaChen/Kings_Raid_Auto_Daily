@@ -1,5 +1,7 @@
 ## 王之逆襲台版AnkuLua腳本，執行一次腳本完成所有每日任務
 
+![Alt text](PrintScreen.png)
+
 測試機器:BlueStacks
 
 解析度: 1280*720
