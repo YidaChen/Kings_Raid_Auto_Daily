@@ -1,7 +1,18 @@
 width = 1280
 height = 720
+W = width
+H = height
+Area_lu = Region(0,0,W/2,H/2) --左上1/4
+Area_ru = Region(W/2,0,W/2,H/2) --右上1/4
+Area_ll = Region(0,H/2,W/2,H/2) --左下1/4
+Area_rl = Region(W/2,H/2,W/2,H/2) --右下1/4
+Area_center = Region(W/6,H/6,W*2/3,H*3/4) --中間公告
+Area_up = Region(0,0,W,H/3) --上1/3橫條
+Area_low = Region(0,H*2/3,W,H/3) --下1/3橫條
+
 Settings:setCompareDimension(true, width)
 Settings:setScriptDimension(true, width)
+Settings:set("MinSimilarity", 0.90) -- 設定圖片相似度的預設值
 
 debugR = Region(150,150,1000,50)
 friendR = Region(467,642,47,40) --朋友
@@ -62,6 +73,7 @@ arenaBattleAgainR = Region(1175, 459, 49, 55) --再來一次對決1
 arenaBattleAgain2R = Region(1175, 461, 48, 52) --再來一次對決2
 arenaBattleExitR = Region(1176, 595, 53, 48) --離開競技場戰鬥
 arenaExitx3R = Region(129, 21, 31, 14) --離開競技場, 要按3次
+shopR = Region(578, 644, 39, 34) --特惠商城
 
 isDebug = true
 s0 = 1 --debug訊息顯示秒數
@@ -75,6 +87,11 @@ f2 = 6 -- to
 f3 = 2 --討伐章節 from
 f4 = 7 -- to
 arenaCount = 3 --PVP次數
+redItemList = {"新","騎","戰","刺","弓","械","法","牧"} --特殊道具召喚種類
+--召喚種類的xy座標
+redItemX = 136
+redItemY = {52,135,232,325,410,500,586,677}
+
 
 dialogInit()
 
@@ -85,6 +102,7 @@ addCheckBox("isstockade","地下監牢",true)
 addCheckBox("isheroInn","英雄旅館",true)
 addCheckBox("isroyalVault","皇室金庫",true)
 addCheckBox("isarena","PVP",true)
+addCheckBox("isdailyReward","領每日任務獎勵",true)
 addSeparator()
 addTextView("高級地城章節：")
 addEditNumber("f1",1)
@@ -95,9 +113,12 @@ addEditNumber("f4",7)
 addTextView("PVP次數：")
 addEditNumber("arenaCount",3)
 addSeparator()
+addCheckBox("isfreeRedItemGet","領商城免費紅抽",true)
+addSpinnerIndex("redItemIdx",redItemList,redItemList[7])
+addSeparator()
 addCheckBox("isDebug","debug訊息顯示",true)
 
-dialogShow("King's Raid 台版每日任務 ver.180707")
+dialogShow("King's Raid 台版每日任務 ver.180708")
 
 function debug(mes)
     if(isDebug) then
@@ -116,6 +137,37 @@ function vanishClick(R,imgStr,searchSec) --按到圖消失為止,無反應的防
 	end
 end
 
+function freeRedItemGet()
+	debug("領商城免費紅抽")
+	vanishClick(shopR,"shop.png",s1)
+	wait(3)
+	click(Location(155, 556)) --商城裝備座標
+	wait(3)
+	click(Location(427, 524)) --特殊道具召喚
+	wait(3)
+	click(Location(redItemX, redItemY[redItemIdx])) --選擇道具種類
+	wait(2)
+	click(Location(705, 389)) --點進去
+	wait(5)
+	click(Location(147,375)) --抽
+	wait(8)
+	click(Location(1110,658)) --離開
+	wait(1)
+	click(Location(1110,658)) --離開
+	wait(2)
+	click(Location(135,25)) --離開商城
+end
+
+function dailyReward()
+	debug("領每日任務獎勵")
+	vanishClick(missionR,"mission.png",s1)
+    for i = 1,19 do
+    	click(Location(1063, 222)) --領取獎勵的座標
+    	wait(2.2)
+    end
+    wait(1)
+    backR:waitClick("back.png",s1)
+end
 function friendPoint()
     debug("朋友交換點數")
     vanishClick(friendR,"friend.png",s1)
@@ -203,8 +255,10 @@ function stockade()
 	vanishClick(stockadeR,"stockade.png",s1)
 	vanishClick(moveR,"move.png",s1)
 	vanishClick(enterStockadeR,"enterStockade.png",s1)
-	vanishClick(engageR,"engage.png",s1)
+	vanishClick(Area_low,"engage.png",s1) --準備掃蕩的位置左右會變
+	wait(2)
 	vanishClick(readyBattleStockadeR,"readyBattleStockade.png",s1)
+	wait(2)
 	autoRepeatR:waitClick("autoRepeat.png",s1)
 	wait(2)
 	selectStockadeRewardR:waitClick(Pattern("selectStockadeReward.png"):targetOffset(50,0),s1)
@@ -250,7 +304,8 @@ function royalVault()
 	vanishClick(moveR,"move.png",s1)
 	vanishClick(royalVaultR,"royalVault.png",s1)
 	wait(4)
-	floorBottomR:waitClick("floorBottom.png",s1)
+	click(Location(251, 670)) --改成直接點固定位置
+	--floorBottomR:waitClick("floorBottom.png",s1)
 	wait(2)
 	royalVaultReadyR:waitClick("royalVaultReady.png",s1)
 	wait(2)
@@ -303,7 +358,12 @@ function main()
     if isarena then
     	arena(arenaCount)
 	end
-    --待完成: 領取每日任務獎勵(可while同位置點)、商城免費紅抽
+	if isdailyReward then
+    	dailyReward()
+	end
+	if isfreeRedItemGet then
+    	freeRedItemGet() --商城每日免費紅抽
+	end
 end
 
 main()
