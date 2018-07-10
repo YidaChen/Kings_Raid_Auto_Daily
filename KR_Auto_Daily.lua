@@ -13,6 +13,7 @@ Area_low = Region(0,H*2/3,W,H/3) --下1/3橫條
 Settings:setCompareDimension(true, width)
 Settings:setScriptDimension(true, width)
 Settings:set("MinSimilarity", 0.90) -- 設定圖片相似度的預設值
+setImmersiveMode(true) -- 海苔條抓圖相關
 
 debugR = Region(150,150,1000,50)
 friendR = Region(467,642,47,40) --朋友
@@ -74,6 +75,8 @@ arenaBattleAgain2R = Region(1175, 461, 48, 52) --再來一次對決2
 arenaBattleExitR = Region(1176, 595, 53, 48) --離開競技場戰鬥
 arenaExitx3R = Region(129, 21, 31, 14) --離開競技場, 要按3次
 shopR = Region(578, 644, 39, 34) --特惠商城
+worldBossR = Region(1164, 370, 49, 38) --世界王
+worldBossExitR = Region(1182, 597, 45, 50) --離開世界王戰鬥
 
 isDebug = true
 s0 = 1 --debug訊息顯示秒數
@@ -95,16 +98,18 @@ redItemY = {52,135,232,325,410,500,586,677}
 
 dialogInit()
 
-addCheckBox("isfriendPoint","交換朋友點數",true)
-addCheckBox("isdungeon","高級地城",true)
-addCheckBox("isconquest","討伐戰鬥",true)
-addCheckBox("isstockade","地下監牢",true)
-addCheckBox("isheroInn","英雄旅館",true)
-addCheckBox("isroyalVault","皇室金庫",true)
-addCheckBox("isarena","PVP",true)
-addCheckBox("isdailyReward","領每日任務獎勵",true)
+addCheckBox("isfriendPoint","換點數",true)
+addCheckBox("isconquest","討伐",true)
+addCheckBox("isroyalVault","金庫",true)
+addCheckBox("isdungeon","地城",true)
+addCheckBox("isstockade","監牢",true)
 addSeparator()
-addTextView("高級地城章節：")
+addCheckBox("isheroInn","旅館",true)
+addCheckBox("isarena","PVP",true)
+addCheckBox("isworldBoss","世界王",true)
+addCheckBox("isdailyReward","日任務獎勵",true)
+addSeparator()
+addTextView("地城章節：")
 addEditNumber("f1",1)
 addEditNumber("f2",6)
 addTextView("討伐章節：")
@@ -113,10 +118,10 @@ addEditNumber("f4",7)
 addTextView("PVP次數：")
 addEditNumber("arenaCount",3)
 addSeparator()
-addCheckBox("isfreeRedItemGet","領商城免費紅抽",true)
+addCheckBox("isfreeRedItemGet","商城1紅抽",true)
 addSpinnerIndex("redItemIdx",redItemList,redItemList[7])
 addSeparator()
-addCheckBox("isDebug","debug訊息顯示",true)
+addCheckBox("isDebug","debug訊息",true)
 
 dialogShow("King's Raid 台版每日任務 ver.180708")
 
@@ -189,7 +194,9 @@ function dungeon(from, to)
 		y = 80 * math.ceil(i / 2)
 
 		vanishClick(portalR,"portal.png",s1)
-		vanishClick(dungeonR,"dungeon.png",s1)
+		wait(4)
+		dungeonR:waitClick("dungeon.png",s1)
+		wait(1.8)
 		dungeonTitleR:waitClick(Pattern("dungeonTitle.png"):targetOffset(x,y),s1)
     	vanishClick(moveR,"move.png",s1)
     	vanishClick(prepareBattleR,"prepareBattle.png",s1)
@@ -197,7 +204,7 @@ function dungeon(from, to)
     	autoRepeatR:waitClick("autoRepeat.png",s1)
     	vanishClick(autoRepeatOKR,"autoRepeatOK.png",s1)
     	wait(s3)
-    	xR:waitClick("x.png",s4)
+    	xR:waitClick("x.png",1999)
     	vanishClick(xR,"x.png",s1)
     	vanishClick(leaveBattleR,"leaveBattle.png",s1)
     end
@@ -217,7 +224,9 @@ function conquest(from, to)
 		y = 80 * math.ceil(i / 2)
 
 		vanishClick(portalR,"portal.png",s1)
-		vanishClick(conquestR,"conquest.png",s1)
+		wait(4)
+		conquestR:waitClick("conquest.png",s1)
+		wait(1.8)
 		dungeonTitleR:waitClick(Pattern("conquestTitle.png"):targetOffset(x,y),s1)
     	vanishClick(moveR,"move.png",s1)
     	vanishClick(prepareBattleR,"prepareBattle.png",s1)
@@ -241,7 +250,9 @@ function orvel()
 	y = 80 * math.ceil(i / 2)
 
 	vanishClick(portalR,"portal.png",s1)
-	vanishClick(dungeonR,"dungeon.png",s1)
+	wait(4)
+	dungeonR:waitClick("dungeon.png",s1)
+	wait(1.8)
 	dungeonTitleR:waitClick(Pattern("dungeonTitle.png"):targetOffset(x,y),s1)
 	vanishClick(moveR,"move.png",s1)
     
@@ -336,30 +347,50 @@ function arena(count)
 	vanishClick(arenaExitx3R,"arenaExitx3.png",s1)
 end
 
+function worldBoss()
+	debug("世界BOSS")
+	vanishClick(worldBossR,"worldBoss.png",s1)
+	wait(3)
+	for i = 1,2 do
+		click(Location(1027, 662)) --準備戰鬥,同個位置點3次
+		wait(2)
+		click(Location(1027, 662))
+		wait(2)
+		click(Location(1027, 662))
+		worldBossExitR:waitClick("worldBossExit.png",s4)
+		vanishClick(worldBossExitR,"worldBossExit.png",s1)
+		wait(9)
+	end
+    backR:waitClick("back.png",s1)
+end
+
 function main()
 	if isfriendPoint then
     	friendPoint()
 	end
+	if isconquest then
+    	conquest(f3,f4)
+	end
+	if isroyalVault then
+    	royalVault() --皇室金庫
+    end
     if isdungeon then
     	dungeon(f1,f2)
     end
-    if isconquest then
-    	conquest(f3,f4)
-	end
     if isstockade then
     	stockade() --地下監牢
     end
     if isheroInn then
     	heroInn()
     end
-    if isroyalVault then
-    	royalVault() --皇室金庫
-    end
     if isarena then
     	arena(arenaCount)
 	end
 	if isdailyReward then
     	dailyReward()
+	end
+	if isworldBoss then
+    	worldBoss()
 	end
 	if isfreeRedItemGet then
     	freeRedItemGet() --商城每日免費紅抽
