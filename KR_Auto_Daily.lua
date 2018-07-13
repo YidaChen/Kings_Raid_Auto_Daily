@@ -370,7 +370,7 @@ function worldBoss()
     backR:waitClick("back.png",s1)
     wait(3)
 end
-
+ 
 function main()
 	if isfriendPoint then
     	friendPoint()
