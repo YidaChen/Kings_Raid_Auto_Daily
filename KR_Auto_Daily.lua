@@ -161,6 +161,7 @@ function freeRedItemGet()
 	click(Location(1110,658)) --離開
 	wait(2)
 	click(Location(135,25)) --離開商城
+	wait(3)
 end
 
 function dailyReward()
@@ -172,6 +173,7 @@ function dailyReward()
     end
     wait(1)
     backR:waitClick("back.png",s1)
+    wait(3)
 end
 function friendPoint()
     debug("朋友交換點數")
@@ -181,6 +183,7 @@ function friendPoint()
     amityPointGetR:waitClick("amityPointGet.png",s1)
     wait(1)
     backR:waitClick("back.png",s1)
+    wait(3)
 end
 --從第幾關打到第幾關
 function dungeon(from, to)
@@ -194,7 +197,7 @@ function dungeon(from, to)
 		y = 80 * math.ceil(i / 2)
 
 		vanishClick(portalR,"portal.png",s1)
-		wait(4)
+		wait(3)
 		dungeonR:waitClick("dungeon.png",s1)
 		wait(1.8)
 		dungeonTitleR:waitClick(Pattern("dungeonTitle.png"):targetOffset(x,y),s1)
@@ -208,6 +211,7 @@ function dungeon(from, to)
     	vanishClick(xR,"x.png",s1)
     	vanishClick(leaveBattleR,"leaveBattle.png",s1)
     end
+    wait(3)
 end
 
 --從第幾關打到第幾關
@@ -224,7 +228,7 @@ function conquest(from, to)
 		y = 80 * math.ceil(i / 2)
 
 		vanishClick(portalR,"portal.png",s1)
-		wait(4)
+		wait(3)
 		conquestR:waitClick("conquest.png",s1)
 		wait(1.8)
 		dungeonTitleR:waitClick(Pattern("conquestTitle.png"):targetOffset(x,y),s1)
@@ -250,7 +254,7 @@ function orvel()
 	y = 80 * math.ceil(i / 2)
 
 	vanishClick(portalR,"portal.png",s1)
-	wait(4)
+	wait(3)
 	dungeonR:waitClick("dungeon.png",s1)
 	wait(1.8)
 	dungeonTitleR:waitClick(Pattern("dungeonTitle.png"):targetOffset(x,y),s1)
@@ -328,6 +332,7 @@ function royalVault()
 	vanishClick(leaveBattleR,"leaveBattle.png",s1)
 	vanishClick(royalVaultExitR,"royalVaultExit.png",s1)
 	vanishClick(castleExitR,"castleExit.png",s1)
+	wait(4)
 end
 
 function arena(count)
@@ -345,6 +350,7 @@ function arena(count)
 	end
 	vanishClick(arenaBattleExitR,"arenaBattleExit.png",s3)
 	vanishClick(arenaExitx3R,"arenaExitx3.png",s1)
+	wait(3)
 end
 
 function worldBoss()
@@ -355,13 +361,14 @@ function worldBoss()
 		click(Location(1027, 662)) --準備戰鬥,同個位置點3次
 		wait(2)
 		click(Location(1027, 662))
-		wait(2)
+		wait(3)
 		click(Location(1027, 662))
 		worldBossExitR:waitClick("worldBossExit.png",s4)
 		vanishClick(worldBossExitR,"worldBossExit.png",s1)
 		wait(9)
 	end
     backR:waitClick("back.png",s1)
+    wait(3)
 end
 
 function main()
@@ -380,12 +387,12 @@ function main()
     if isstockade then
     	stockade() --地下監牢
     end
-    if isheroInn then
-    	heroInn()
-    end
     if isarena then
     	arena(arenaCount)
 	end
+	if isheroInn then
+    	heroInn()
+    end
 	if isdailyReward then
     	dailyReward()
 	end
