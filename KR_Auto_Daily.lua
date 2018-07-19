@@ -68,8 +68,11 @@ castleExitR = Region(116, 14, 47, 27) --離開王城
 arenaR = Region(841, 338, 71, 27) --競技場
 selectArenaR = Region(574, 352, 132, 33) --選擇競技場
 enterArenaR = Region(243, 611, 50, 25) --進入勝者之巔
+enterArena2R = Region(583, 605, 116, 40) --進入榮耀之巔
 readyArenaR = Region(923, 652, 100, 25) --準備對決
+readyArena2R = Region(1033, 649, 100, 29) --準備對決
 startArenaBattleR = Region(922, 652, 102, 26) --對決開始
+startArenaBattle2R = Region(620, 518, 40, 25) --對決開始
 arenaBattleAgainR = Region(1175, 459, 49, 55) --再來一次對決1
 arenaBattleAgain2R = Region(1175, 461, 48, 52) --再來一次對決2
 arenaBattleExitR = Region(1176, 595, 53, 48) --離開競技場戰鬥
@@ -80,10 +83,10 @@ worldBossExitR = Region(1182, 597, 45, 50) --離開世界王戰鬥
 
 isDebug = true
 s0 = 1 --debug訊息顯示秒數
-s1 = 20 --等待點擊的秒數
-s2 = 3 --連續2個點的圖,位置相同,中間等待秒數
-s3 = 120 --連續戰鬥等待間隔
-s4 = 999 --連續戰鬥的下個按鈕等待秒數
+s1 = 40 --等待點擊的秒數
+s2 = 5 --連續2個點的圖,位置相同,中間等待秒數
+s3 = 180 --連續戰鬥等待間隔
+s4 = 1999 --連續戰鬥的下個按鈕等待秒數
 
 f1 = 1 --高級地城章節 from
 f2 = 6 -- to
@@ -121,6 +124,8 @@ addSeparator()
 addCheckBox("isfreeRedItemGet","商城1紅抽",true)
 addSpinnerIndex("redItemIdx",redItemList,redItemList[7])
 addSeparator()
+addCheckBox("isarena2","PVP2",true)
+addEditNumber("arena2Count",30)
 addCheckBox("isDebug","debug訊息",true)
 
 dialogShow("King's Raid 台版每日任務 ver.180708")
@@ -134,9 +139,9 @@ end
 function vanishClick(R,imgStr,searchSec) --按到圖消失為止,無反應的防呆
 	local count = 0  --防止圖形相似誤判
 	if R:exists(imgStr,searchSec) then
-		while R:exists(imgStr,0.5) and count < 4 do
-			R:waitClick(imgStr,0.5)
-			wait(2)
+		while R:exists(imgStr,0.5) and count < 3 do
+			R:existsClick(imgStr,0.5)
+			wait(3)
 			count = count + 1
 		end
 	end
@@ -210,6 +215,7 @@ function dungeon(from, to)
     	xR:waitClick("x.png",1999)
     	vanishClick(xR,"x.png",s1)
     	vanishClick(leaveBattleR,"leaveBattle.png",s1)
+    	wait(4)
     end
     wait(3)
 end
@@ -254,9 +260,9 @@ function orvel()
 	y = 80 * math.ceil(i / 2)
 
 	vanishClick(portalR,"portal.png",s1)
-	wait(3)
+	wait(4)
 	dungeonR:waitClick("dungeon.png",s1)
-	wait(1.8)
+	wait(2)
 	dungeonTitleR:waitClick(Pattern("dungeonTitle.png"):targetOffset(x,y),s1)
 	vanishClick(moveR,"move.png",s1)
     
@@ -349,6 +355,27 @@ function arena(count)
 		vanishClick(arenaBattleAgain2R,"arenaBattleAgain2.png",s3)
 	end
 	vanishClick(arenaBattleExitR,"arenaBattleExit.png",s3)
+	wait(1)
+	vanishClick(arenaExitx3R,"arenaExitx3.png",s1)
+	vanishClick(arenaExitx3R,"arenaExitx3.png",5)
+	wait(3)
+end
+
+function arena2(count)
+	debug("PVP2")
+	orvel()
+	vanishClick(arenaR,"arena.png",s1)
+	vanishClick(moveR,"move.png",s1)
+	vanishClick(selectArenaR,"selectArena.png",s1)
+
+	vanishClick(enterArena2R,"enterArena2.png",s1)
+	wait(4)
+	readyArena2R:waitClick("readyArena2.png",s4)
+	vanishClick(startArenaBattle2R,"startArenaBattle2.png",s1)
+	for i = 2,count do
+		vanishClick(arenaBattleAgain2R,"arenaBattleAgain2.png",s3)
+	end
+	vanishClick(arenaBattleExitR,"arenaBattleExit.png",s3)
 	vanishClick(arenaExitx3R,"arenaExitx3.png",s1)
 	wait(3)
 end
@@ -365,7 +392,7 @@ function worldBoss()
 		click(Location(1027, 662))
 		worldBossExitR:waitClick("worldBossExit.png",s4)
 		vanishClick(worldBossExitR,"worldBossExit.png",s1)
-		wait(9)
+		wait(30)
 	end
     backR:waitClick("back.png",s1)
     wait(3)
@@ -401,6 +428,9 @@ function main()
 	end
 	if isfreeRedItemGet then
     	freeRedItemGet() --商城每日免費紅抽
+	end
+	if isarena2 then
+    	arena2(arena2Count)  --競技場2隊
 	end
 end
 
